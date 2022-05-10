@@ -1,0 +1,66 @@
+#Here you can edit what you want
+
+options:
+	server: &6AGC&bBox
+	world: world
+	
+variables:
+	{killstreak} = 0
+	{Kills} = 0
+	{Deaths} = 0
+
+on mine:
+    add 1 to {blocksmined.%player%}
+
+on server ping:
+	set {maxPlayers} to max player count
+	
+on join:
+	set {onlineplayers} to number of all players
+on join:
+    if {blocksmined} is not set:
+        set {blocksmined} to 0
+
+command /scoreboardinfo:
+	permission: sc.sc
+	aliases: /scinfo, /sci
+	trigger:
+		send "&k&bUWUW &6Skript by &cAgent&7Craft &k&bUWUW" to player
+		
+command /blocksmined <text> <player>:
+	aliases: /bm, /blocksm
+	permission: sc.bm
+	trigger:
+		if arg-1 is not set:
+			send "&cGive parameters, usage: /blocksmined reset (player)" to player
+		if arg-2 is not set:
+			send "&cYou need a player for this!" to player
+		if arg-1 is "reset":
+			set {blocksmined.%arg 2%} to 0
+			send "&a%arg-2%'s blocks mined skill has been resetted." to player
+
+command /kd:
+	trigger:
+		send "&aKills: {Kills.%player%} &cDeaths: {Deaths.%player%}"
+	
+every 1.3 second in "{@world}":
+	loop all players:
+		wipe loop-player's sidebar
+		set name of sidebar of loop-player to "{@server}"
+		set score "&a-----------------------" in sidebar of loop-player to 8
+		set score "&b• &7Online players: &f%{onlineplayers}% / %{maxPlayers}%" in sidebar of loop-player to 7
+		set score "&b• &7KillStreak: &f%{killstreak.%loop-player%}%" in sidebar of loop-player to 6
+		set score "&b• &7K/D Ratio: &f%{Kills.%loop-player%}/{Deaths.%loop-player%}%" in sidebar of loop-player to 5
+		set score "&b• &7Blocks mined: &f%{blocksmined.%loop-player%}%" in sidebar of the loop-player to 4
+		set score "" in sidebar of loop-player to 3
+		set score "&7https://discord.gg/rs4pJBHX" in sidebar of loop-player to 2
+		set score "&a------------------------" in sidebar of loop-player to 1
+
+on death:
+	victim is a player:
+		add 1 to {killstreak.%attacker%}
+		set {killstreak.%victim%} to 0
+		add 1 to {Kills.%attacker%}
+		add 1 to {Deaths.%victim%}
+		
+	
